@@ -1,0 +1,6 @@
+venv/
+__pycache__/
+*.cpp
+config.json
+test*
+gfg.db
