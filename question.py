@@ -5,6 +5,10 @@ import re
 import json
 import db
 from pprint import pprint
+from rich.console import Console
+from rich.syntax import Syntax
+
+console = Console()
 
 class Question:
 
@@ -60,8 +64,16 @@ def get_question(question_id:str) -> Question:
     question = Question(question_id,json.loads(question))
     return question
     
+def show_question(question_id:str,status=None) -> None:
+    resp = request.get(f'/problems/{question_id}/1')
+    soup = bs(resp.content,'lxml')
+    problem_statement = soup.find('div',{'class':'problem-statement'}).text
+    if status:status.stop()
+    # print(problem_statement)
+    syntax = Syntax(problem_statement,'text',word_wrap=True)
+    console.print(syntax)
 
 
 if __name__ == '__main__':
-    question = get_question('shop-in-candy-store1145')
-    print(question.get_intial_code())
+    fetch_question('shop-in-candy-store1145')
+    # print(question.get_intial_code())

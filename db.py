@@ -1,7 +1,9 @@
 import sqlite3
+import os
 
 
-con = sqlite3.connect('gfg.db')
+path = os.path.dirname(__file__)
+con = sqlite3.connect(os.path.join(path,'gfg.db'))
 
 
 def create_tables():
