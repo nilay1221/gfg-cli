@@ -5,6 +5,8 @@ import time
 from rich import print as rprint
 from rich.status import Status
 from typing import Dict
+import traceback
+import sys
 
 SOURCE = 'https://practice.geeksforgeeks.org'
 
@@ -29,7 +31,8 @@ def test_code(question_id:str,code:str,language:str,inp:str=None,status:Status=N
     # start_time = time.time()
     try:
         question = qst.get_question(question_id)
-        code_input = question.input if inp is None else inp
+        # https://stackoverflow.com/questions/4020539/process-escape-sequences-in-a-string-in-python
+        code_input = question.input if inp is None else bytes(inp,'utf-8').decode('unicode_escape')
         data = {'request_type':'testSolution','input':code_input,'code':code,'language':language,'source':SOURCE}
         judge_data = {'request_type':'expectedOutput','input':code_input,'source':SOURCE}
         cookies = config.get_cookies()
@@ -38,17 +41,28 @@ def test_code(question_id:str,code:str,language:str,inp:str=None,status:Status=N
         judge_result = _get_result(post_url,judge_data,cookies,sub_type='expectedOutput')
         sub_result = (code_result)['message']
         if status:status.stop()
+        sanitize = lambda x:x.replace('\r\n','\n')
         if code_result['view_mode'] == 'compilation':
-            rprint('[bold red]Compilation Error')
-            print(sub_result['error'])
+            output_str = []
+            output_str.append('[bold red]Compilation Error[/bold red]')
+            output_str.append(sanitize(sub_result['error']))
+            rprint('\n'.join(output_str))
         elif code_result['view_mode'] == 'runtime':
-            rprint('[bold red]Runtime Error')
-            print(sub_result['error'])
+            output_str = []
+            output_str.append('[bold red]Runtime Error[/bold red]')
+            output_str.append(sanitize(sub_result['error']))
+            rprint('\n'.join(output_str))
         else:
-            rprint('[bold green]Success')
-            print('''Your input is\n{}\n\nYour output is\n{}\nExpected Output\n{}'''.format(sub_result['input'],sub_result['output'],judge_result['message']['output']))
+            output_str = []
+            output_str.append('[bold green]Success[/bold green]')
+            output_str.append('Your input is \n{}\n'.format(sanitize(sub_result['input'])))
+            output_str.append('Your output is \n{}'.format(sanitize(sub_result['output'])))
+            output_str.append('Expected Output is \n{}'.format(sanitize(judge_result['message']['output'])))
+            rprint('\n'.join(output_str))
+            # print('''Your input is\n{}\n\nYour output is\n{}\nExpected Output\n{}'''.format(sub_result['input'],sub_result['output'],judge_result['message']['output']))
     except Exception as e:
-        # print(e)
+        traceback.print_exc()
+        print(e)
         print('Something went wrong. Please try again later')
 
 

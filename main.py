@@ -29,6 +29,7 @@ class GFG:
         parser_test.add_argument('file',type=argparse.FileType('r'),help='Input file to test')
         parser_test.add_argument('-c',type=str,help='Problem Code Default filename')
         parser_test.add_argument('-i',type=argparse.FileType('r'),help='Code Input Default Sample Input')
+        parser_test.add_argument('-s',type=str,help='Input string for testing')
         parser_test.add_argument('-l',type=str,default='cpp',help="Language for the problem",choices=['cpp','java','python'])
         parser_test.set_defaults(func=self.test)
 
@@ -46,7 +47,8 @@ class GFG:
 
 
         # Parser for showing the problem
-        parser_show = sub_parser.add_parser('show',help='View problem')
+        parser_show = sub_parser.add_parser('view',help='View problem')
+        parser_show.add_argument('--input',help='View the Input format of Problem',action='store_true')
         parser_show.add_argument('-c',type=str,help='Problem code',required=True)
         parser_show.set_defaults(func=self.show_problem)
 
@@ -98,6 +100,7 @@ class GFG:
         # print(question_id)
         code = args.file.read()
         inp = args.i.read() if args.i else None
+        inp = args.s
         with console.status('Loading...',spinner='line') as status:
             question_test.test_code(question_id,code,language=args.l,inp=inp,status=status)
 
@@ -111,8 +114,13 @@ class GFG:
 
     def show_problem(self,args) -> None:
         question_id = args.c
+        custom_input = args.input
         with console.status('Loading...',spinner='line') as status:
-            qst.show_question(question_id,status)
+            if custom_input:
+                question = qst.get_question(question_id)
+                print(question.get_custom_input())
+            else:
+                qst.show_question(question_id,status)
 
 
 

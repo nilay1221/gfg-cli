@@ -4,6 +4,7 @@ import config
 import time
 from rich.console import Console
 from rich.status import Status
+from rich import print as rprint
 
 
 console = Console()
@@ -27,16 +28,23 @@ def submit_code(question_id:str,code:str,language:str,status:Status=None):
     # print(sub_json)
     msg = sub_json['message']
     if status:status.stop()
+    sanitize = lambda x:x.replace('\r\n','\n')
     if sub_json['view_mode'] == 'correct':
-        console.print('Correct Answer :white_check_mark:')
-        console.print('Execution Time: [bold]{}'.format(msg['execution_time']))
+        output_str = []
+        output_str.append('Correct Answer :white_check_mark:')
+        output_str.append('Execution Time: [bold]{}'.format(msg['execution_time']))
+        rprint('\n'.join(output_str))
     elif sub_json['view_mode'] == 'wrong_p':
-        console.print('Wrong answer :x:')
-        console.print('Input\n{}'.format(msg['file_input']))
-        console.print('Your Output\n{}'.format(msg['code_output']))
-        console.print('Expected Output\n{}'.format(msg['file_output']))
+        output_str = []
+        output_str.append('Wrong answer :x:\n')
+        output_str.append('Input\n{}\n'.format(sanitize(msg['file_input'])))
+        output_str.append('Your Output\n{}'.format(sanitize(msg['code_output'])))
+        output_str.append('Expected Output\n{}'.format(sanitize(msg['file_output'])))
+        rprint('\n'.join(output_str))
     elif sub_json['view_mode'] == 'runtime':
-        console.print('[bold red]Runtime Error :heavy_exclamation_mark:\n')
-        console.print('{}'.format(msg['error']))
+        output_str = []
+        output_str.append('[bold red]Runtime Error :heavy_exclamation_mark:\n')
+        output_str.append('{}'.format(sanitize(msg['error'])))
+        rprint('\n'.join(output_str))
 
 
