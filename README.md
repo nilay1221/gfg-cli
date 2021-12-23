@@ -26,11 +26,11 @@ A config.json needs to be created for testing and submmiting the problem.
 "gfguserName":"<Your GFG username>"
 }
 ```
-Once you have created this you just need to set the path to config 
-
+Once you have created this you just need to set the path to config
 ```bash
 python3 main.py config ./config.json #Path to config file
 ```
+For more information, view [this](#get-config)
 - **Fetching the problem**\
 To get question code for eg if this is the question link "https://practice.geeksforgeeks.org/problems/quick-sort-on-linked-list/1/*" then **quick-sort-on-linked-list** is the question code
 ```bash
@@ -52,3 +52,7 @@ python3 main.py test quick-sort-on-linked-list.cpp
 python3 main.py submit quick-sort-on-linked-list.cpp #Filename
 ```
 
+## <a name="get-config"></a>Getting config vars
+1. Login into [GeeksForGeeks]("https://www.geeksforgeeks.org/")
+2. Open Inspect Console go to Storage tab and copy the authoken and gfguserName values
+![config image](screenshots/config.jpg)
